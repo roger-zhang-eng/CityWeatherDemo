@@ -10,4 +10,5 @@ import Foundation
 
 extension Bundle {
     static let appID: String = (Bundle.main.infoDictionary?["AppID"] as? String) ?? ""
+    static let preferenceCountryCodes: [String] = (Bundle.main.infoDictionary?["PreferenceCountryCodes"] as? [String]) ?? [String]()
 }

@@ -41,7 +41,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="125" id="8bQ-bo-rkL"/>
                                     <constraint firstItem="Au1-Jy-Vnq" firstAttribute="leading" secondItem="TsP-La-fkz" secondAttribute="leading" id="NRh-36-QTL"/>
@@ -72,7 +72,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="GfM-im-eDl" secondAttribute="trailing" id="EMw-y7-HAd"/>
                                     <constraint firstItem="6tN-Kl-raM" firstAttribute="centerY" secondItem="qhT-vz-ofh" secondAttribute="centerY" id="FYH-H1-P9y"/>
@@ -83,7 +83,7 @@
                                 </constraints>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="TsP-La-fkz" firstAttribute="leading" secondItem="O48-Fk-U5I" secondAttribute="leading" id="28P-cJ-NBg"/>
                             <constraint firstItem="qhT-vz-ofh" firstAttribute="top" secondItem="O48-Fk-U5I" secondAttribute="top" id="Huy-Tp-Ngh"/>

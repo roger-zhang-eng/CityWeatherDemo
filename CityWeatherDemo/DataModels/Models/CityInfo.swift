@@ -13,6 +13,8 @@ struct CityInfo: Codable {
     var name: String?
     var state: String?
     var country: String?
+    var lat: Double?
+    var lon: Double?
     
     init() {}
 }

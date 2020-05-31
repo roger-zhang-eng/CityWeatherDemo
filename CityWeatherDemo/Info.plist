@@ -45,5 +45,15 @@
 	<string>5c6090ae72520cc52ea0e6e951bd786d</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This Demo Application need detect your device location to get weather data.</string>
+	<key>PreferenceCountryCodes</key>
+	<array>
+		<string>US</string>
+		<string>AU</string>
+		<string>CA</string>
+		<string>NZ</string>
+		<string>GB</string>
+		<string>HK</string>
+		<string>SG</string>
+	</array>
 </dict>
 </plist>

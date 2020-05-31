@@ -23,7 +23,7 @@ class SunriseSunsetTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        
+        self.backgroundColor = Appearance.Style.Colors.tableViewCellGroupBackground
         sunsetLabel.textColor = Appearance.Style.Colors.label
         sunriseLabel.textColor = Appearance.Style.Colors.label
     }

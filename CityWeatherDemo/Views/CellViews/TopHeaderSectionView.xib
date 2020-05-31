@@ -30,10 +30,10 @@
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="2XQ-gN-jao" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="16" id="3rj-sF-bnh"/>
-                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="2XQ-gN-jao" secondAttribute="bottom" constant="8" id="4MW-i7-eKO"/>
+                <constraint firstAttribute="bottom" secondItem="2XQ-gN-jao" secondAttribute="bottom" constant="8" id="7q3-VK-1Jj"/>
                 <constraint firstItem="5sv-xd-kM9" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="16" id="UFA-04-WB4"/>
-                <constraint firstItem="5sv-xd-kM9" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="4" id="WKR-th-y2m"/>
                 <constraint firstItem="5sv-xd-kM9" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="ef9-zO-whW"/>
+                <constraint firstItem="5sv-xd-kM9" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="4" id="oa3-4y-VN4"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="5sv-xd-kM9" secondAttribute="trailing" constant="16" id="x85-dX-3bp"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="2XQ-gN-jao" secondAttribute="trailing" constant="16" id="yDN-yH-Fdf"/>
             </constraints>

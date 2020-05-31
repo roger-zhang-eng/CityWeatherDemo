@@ -6,7 +6,9 @@
   Copyright © 2020 Roger Zhang. All rights reserved.
 */
 
+"Error-Title" = "Error";
 "Alert-Title" = "Alert";
 "Network-Message" = "Network is not available, try again later.";
 "NotFount-Message" = "City is not found.";
+"GPS-Message" = "Please allow location permission for weather search by GPS.";
 "DeleteAll-Message" = "Would you agree to delete all the recent search records?";

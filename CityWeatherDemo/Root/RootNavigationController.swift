@@ -19,7 +19,8 @@ class RootNavigationController: UINavigationController {
         
         rootVC.viewModel = SearchCityWeatherViewModel(weatherService: WeatherDataService(),
                                                       countryCodeDecoder: CityWeatherHelper(),
-                                                      locationService: LocationManager())
+                                                      locationService: LocationManager(),
+                                                      networkMonitor: NetworkMonitor())
     }
 
 }

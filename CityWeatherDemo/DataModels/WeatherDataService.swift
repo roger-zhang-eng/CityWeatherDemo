@@ -51,9 +51,7 @@ struct WeatherDataService: DownloadProtocol {
         parameters["units"] = "metric"
         
         let url = baseURL.appendingPathComponent(path)
-        
-        //return Observable.just(CityWeatherHelper.shared.mockupWeatherData()!)
-        
+
         return RxAlamofire.requestData(.get, url, parameters: parameters, encoding: URLEncoding.default, headers: defaultHeaders)
                 .flatMap { (response, value) -> Observable<WeatherCityData> in
                     guard response.statusCode < 300 && response.statusCode >= 200 else {

@@ -69,7 +69,7 @@ class PickerTextField: UITextField, UIPickerViewDataSource, UIPickerViewDelegate
         
         let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil)
         
-        toolBar.setItems([flexSpace,flexSpace,flexSpace,flexSpace,doneButton], animated: true)
+        toolBar.setItems([flexSpace,flexSpace,doneButton], animated: true)
         
         return toolBar
     }

@@ -28,4 +28,24 @@ public enum ServiceError: Error {
     case overSize
     /// GPS Error
     case gpsError
+    
+    func title() -> String {
+        switch self {
+        case .notFound:
+            return "Error-Title".localized
+        default:
+            return "Alert-Title".localized
+        }
+    }
+    
+    func message() -> String {
+        switch self {
+        case .network:
+            return "Network-Message".localized
+        case .gpsError:
+            return "GPS-Message".localized
+        default:
+            return "NotFount-Message".localized
+        }
+    }
 }

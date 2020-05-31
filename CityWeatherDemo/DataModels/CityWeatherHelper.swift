@@ -11,11 +11,12 @@ import Foundation
 protocol CountryCodeDecodeProtocol {
     func initSetup()
     func countryList() -> [String]
-    func mockupWeatherData() -> WeatherCityData?
 }
 
 class CityWeatherHelper: CountryCodeDecodeProtocol {    
     private var cityListRawArray: [CityInfo]?
+    
+    private let preferenceCountryCodes = Bundle.preferenceCountryCodes
     
     init() { }
     
@@ -44,12 +45,24 @@ class CityWeatherHelper: CountryCodeDecodeProtocol {
     
     func countryList() -> [String] {
         guard cityListRawArray != nil && cityListRawArray!.count > 0 else {
-            return [String]()
+            return preferenceCountryCodes
         }
         
         let countrySet: Set<String> = Set(cityListRawArray!.map { $0.country ?? "" } )
-        
-        return Array(countrySet).sorted { $0 < $1 }
+        if preferenceCountryCodes.count > 0 {
+            let preferenceSet = Set(preferenceCountryCodes)
+            let fullCountryCodes = Array(countrySet).sorted { $0 < $1 }
+            var shapedCountryCode = preferenceCountryCodes
+            for countryCode in fullCountryCodes {
+                if !preferenceSet.contains(countryCode) && !countryCode.isEmpty {
+                    shapedCountryCode.append(countryCode)
+                }
+            }
+            
+            return shapedCountryCode
+        } else {
+            return Array(countrySet).sorted { $0 < $1 }
+        }
     }
     
     private func loadCitiesJSON() -> [CityInfo]? {
@@ -67,21 +80,5 @@ class CityWeatherHelper: CountryCodeDecodeProtocol {
             }
         }
         return nil
-    }
-    
-    func mockupWeatherData() -> WeatherCityData? {
-        let bundle = Bundle(for: type(of: self))
-        guard let url = bundle.url(forResource: "SydneyWeatherData", withExtension: "json") else {
-            debugPrint("Missing file: SydneyWeatherData.json")
-            return nil
-        }
-
-        do {
-            let data = try Data(contentsOf: url)
-            let cityWeatherData = try JSONDecoder().decode(WeatherCityData.self, from: data)
-            return cityWeatherData
-        } catch {
-            return nil
-        }
     }
 }

@@ -43,9 +43,17 @@ struct WeatherWind: Codable {
     init() {}
 }
 
+struct LocationCoor: Codable {
+    var lon: Double?
+    var lat: Double?
+    
+    init() {}
+}
+
 
 struct WeatherCityData: Codable {
     var id: Int?
+    var coord: LocationCoor?
     var weather: [WeatherDescrData]?
     var main: WeatherMainData?
     var sys: WeatherSysData?

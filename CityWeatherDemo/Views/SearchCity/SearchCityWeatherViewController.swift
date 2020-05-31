@@ -135,7 +135,8 @@ class SearchCityWeatherViewController: UIViewController {
             .subscribe(onNext: {
                 [unowned self] savedCitiesArray in
                 self.view.endEditing(true)
-                self.filteredCountry.text = ""
+                self.searchBar.text = ""
+                self.searchBar.showsCancelButton = false
                 self.performSegue(withIdentifier: self.recentSearchSegue, sender: nil)
             }, onError: nil, onCompleted: nil, onDisposed: nil)
             .disposed(by: disposeBag)
@@ -153,7 +154,8 @@ class SearchCityWeatherViewController: UIViewController {
         
         viewModel?.output?.error
             .skipUntil(rx.viewDidAppear)
-            .observeOn(MainScheduler.instance)
+            //.observeOn(MainScheduler.instance)
+            .delay(0.6, scheduler: MainScheduler.instance)
             .subscribe(onNext: {
                 [unowned self] (serviceError) in
                 self.alertServiceError(error: serviceError)
@@ -211,8 +213,8 @@ class SearchCityWeatherViewController: UIViewController {
     }
     
     private func alertServiceError(error: ServiceError) {
-        let alertController = UIAlertController(title: "Alert-Title".localized,
-                                                message: "NotFount-Message".localized,
+        let alertController = UIAlertController(title: error.title(),
+                                                message: error.message(),
                                                 preferredStyle: .alert)
 
         let okayButton = UIAlertAction(title: "OK", style: .cancel, handler: nil)
@@ -268,6 +270,7 @@ extension SearchCityWeatherViewController: UISearchBarDelegate {
         debugPrint("search text: \(searchBar.text!)")
         self.viewModel?.input.searchContentTrigger
             .onNext(searchBar.text!)
+        searchBar.showsCancelButton = false
         searchBar.resignFirstResponder()
     }
 }
@@ -302,7 +305,7 @@ extension SearchCityWeatherViewController: UITableViewDataSource, UITableViewDel
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 54
+        return 64
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
