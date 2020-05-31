@@ -1,0 +1,12 @@
+/* 
+  generalText.strings
+  CityWeatherDemo
+
+  Created by Roger Zhang on 30/5/20.
+  Copyright © 2020 Roger Zhang. All rights reserved.
+*/
+
+"Alert-Title" = "Alert";
+"Network-Message" = "Network is not available, try again later.";
+"NotFount-Message" = "City is not found.";
+"DeleteAll-Message" = "Would you agree to delete all the recent search records?";

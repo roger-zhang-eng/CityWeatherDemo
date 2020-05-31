@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="PZF-dt-agi">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Search City Weather View Controller-->
+        <scene sceneID="qTz-a1-ADE">
+            <objects>
+                <viewController id="PZF-dt-agi" customClass="SearchCityWeatherViewController" customModule="CityWeatherDemo" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Crm-8b-jTP">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XyZ-4r-gkx" userLabel="InputView">
+                                <rect key="frame" x="0.0" y="90" width="414" height="96"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Country Code" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MDg-tN-XYB">
+                                        <rect key="frame" x="8" y="0.0" width="60" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="Bq8-BQ-aUy"/>
+                                            <constraint firstAttribute="width" constant="60" id="PjP-FP-r1E"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="15"/>
+                                        <color key="textColor" systemColor="secondaryLabelColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <textField opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="AU" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Awx-R7-pGD" customClass="PickerTextField" customModule="CityWeatherDemo" customModuleProvider="target">
+                                        <rect key="frame" x="191" y="3" width="32" height="34"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="32" id="9Dj-OB-vXR"/>
+                                            <constraint firstAttribute="height" constant="34" id="xbf-g7-8ol"/>
+                                        </constraints>
+                                        <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zuv-3q-R3A" userLabel="flag">
+                                        <rect key="frame" x="157" y="3" width="34" height="34"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="34" id="lyo-Ib-ZHX"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jfb-Ed-CwF" userLabel="filterButton">
+                                        <rect key="frame" x="378" y="6" width="28" height="28"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="jfb-Ed-CwF" secondAttribute="height" multiplier="1:1" id="9Jz-yc-adi"/>
+                                            <constraint firstAttribute="width" constant="28" id="k8y-HP-1jN"/>
+                                        </constraints>
+                                        <state key="normal" image="filterButton"/>
+                                    </button>
+                                    <searchBar contentMode="redraw" searchBarStyle="minimal" placeholder="Search City Name or Zip Code" translatesAutoresizingMaskIntoConstraints="NO" id="1gP-QC-Rgb">
+                                        <rect key="frame" x="0.0" y="40" width="414" height="56"/>
+                                        <textInputTraits key="textInputTraits" autocorrectionType="no"/>
+                                    </searchBar>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <constraints>
+                                    <constraint firstItem="jfb-Ed-CwF" firstAttribute="centerY" secondItem="MDg-tN-XYB" secondAttribute="centerY" id="1hf-J7-Mtu"/>
+                                    <constraint firstItem="Awx-R7-pGD" firstAttribute="centerY" secondItem="MDg-tN-XYB" secondAttribute="centerY" id="77X-LT-bQW"/>
+                                    <constraint firstAttribute="trailing" secondItem="jfb-Ed-CwF" secondAttribute="trailing" constant="8" id="DaL-3d-d4P"/>
+                                    <constraint firstItem="Awx-R7-pGD" firstAttribute="centerX" secondItem="XyZ-4r-gkx" secondAttribute="centerX" id="U7P-lm-uMm"/>
+                                    <constraint firstItem="MDg-tN-XYB" firstAttribute="top" secondItem="XyZ-4r-gkx" secondAttribute="top" id="Xzz-N9-Ugs"/>
+                                    <constraint firstItem="1gP-QC-Rgb" firstAttribute="top" secondItem="MDg-tN-XYB" secondAttribute="bottom" id="bGb-Ia-vJT"/>
+                                    <constraint firstAttribute="trailing" secondItem="1gP-QC-Rgb" secondAttribute="trailing" symbolic="YES" id="beQ-a4-ecs"/>
+                                    <constraint firstItem="MDg-tN-XYB" firstAttribute="leading" secondItem="XyZ-4r-gkx" secondAttribute="leading" constant="8" id="fpF-Zf-zhj"/>
+                                    <constraint firstItem="Awx-R7-pGD" firstAttribute="top" secondItem="Zuv-3q-R3A" secondAttribute="top" id="i2v-2K-XmF"/>
+                                    <constraint firstItem="1gP-QC-Rgb" firstAttribute="leading" secondItem="XyZ-4r-gkx" secondAttribute="leading" symbolic="YES" id="oF8-L0-DyB"/>
+                                    <constraint firstAttribute="height" constant="96" id="pHx-JK-aDx"/>
+                                    <constraint firstItem="Awx-R7-pGD" firstAttribute="leading" secondItem="Zuv-3q-R3A" secondAttribute="trailing" id="swB-e3-LoP"/>
+                                    <constraint firstItem="Awx-R7-pGD" firstAttribute="bottom" secondItem="Zuv-3q-R3A" secondAttribute="bottom" id="vzc-Ed-Ail"/>
+                                </constraints>
+                            </view>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="exS-uO-cKV">
+                                <rect key="frame" x="0.0" y="186" width="414" height="710"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="XyZ-4r-gkx" firstAttribute="leading" secondItem="v5u-pn-GI5" secondAttribute="leading" id="2lM-iW-pvp"/>
+                            <constraint firstItem="exS-uO-cKV" firstAttribute="top" secondItem="XyZ-4r-gkx" secondAttribute="bottom" id="4np-2X-4fn"/>
+                            <constraint firstItem="exS-uO-cKV" firstAttribute="trailing" secondItem="v5u-pn-GI5" secondAttribute="trailing" id="Dbl-uQ-FCe"/>
+                            <constraint firstItem="XyZ-4r-gkx" firstAttribute="top" secondItem="v5u-pn-GI5" secondAttribute="top" constant="2" id="OQh-AE-FwT"/>
+                            <constraint firstItem="exS-uO-cKV" firstAttribute="leading" secondItem="v5u-pn-GI5" secondAttribute="leading" id="UMG-Ex-BnC"/>
+                            <constraint firstAttribute="bottom" secondItem="exS-uO-cKV" secondAttribute="bottom" id="fna-EY-gzE"/>
+                            <constraint firstItem="XyZ-4r-gkx" firstAttribute="trailing" secondItem="v5u-pn-GI5" secondAttribute="trailing" id="itJ-nc-1SY"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="v5u-pn-GI5"/>
+                    </view>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics"/>
+                    <connections>
+                        <outlet property="filterButton" destination="jfb-Ed-CwF" id="LQz-8l-XKd"/>
+                        <outlet property="filteredCountry" destination="Awx-R7-pGD" id="adI-b6-aJM"/>
+                        <outlet property="flagLabel" destination="Zuv-3q-R3A" id="W59-nz-oqD"/>
+                        <outlet property="searchBar" destination="1gP-QC-Rgb" id="toR-np-Xe9"/>
+                        <outlet property="tableView" destination="exS-uO-cKV" id="Yf7-Fn-xzC"/>
+                        <segue destination="zvS-cR-Vel" kind="presentation" identifier="recentSearchSegue" id="tT3-pk-Z1k"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="GIY-ez-bwM" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="144.92753623188406" y="152.67857142857142"/>
+        </scene>
+        <!--RecentSearchCity-->
+        <scene sceneID="MvS-EC-2lL">
+            <objects>
+                <viewControllerPlaceholder storyboardName="RecentSearchCity" id="zvS-cR-Vel" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="7Th-at-ZNA" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="767" y="153"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="filterButton" width="32" height="32"/>
+    </resources>
+</document>

@@ -1,0 +1,72 @@
+PODS:
+  - Action (4.0.0):
+    - RxCocoa (~> 5.0)
+    - RxSwift (~> 5.0)
+  - Alamofire (4.9.1)
+  - RxAlamofire (5.1.0):
+    - RxAlamofire/Core (= 5.1.0)
+  - RxAlamofire/Core (5.1.0):
+    - Alamofire (~> 4.8)
+    - RxSwift (~> 5.0)
+  - RxAppState (1.6.0):
+    - RxCocoa (~> 5.0)
+    - RxSwift (~> 5.0)
+  - RxBlocking (5.1.1):
+    - RxSwift (~> 5)
+  - RxCocoa (5.1.1):
+    - RxRelay (~> 5)
+    - RxSwift (~> 5)
+  - RxCoreLocation (1.4.2):
+    - RxCoreLocation/Core (= 1.4.2)
+  - RxCoreLocation/Core (1.4.2):
+    - RxCocoa (~> 5.1)
+    - RxSwift (~> 5.1)
+  - RxRelay (5.1.1):
+    - RxSwift (~> 5)
+  - RxSwift (5.1.1)
+  - RxTest (5.1.1):
+    - RxSwift (~> 5)
+  - SwiftLint (0.39.1)
+
+DEPENDENCIES:
+  - Action (= 4.0.0)
+  - Alamofire (~> 4.9)
+  - RxAlamofire (~> 5.1)
+  - RxAppState (= 1.6.0)
+  - RxBlocking (~> 5.1)
+  - RxCocoa (~> 5.0)
+  - RxCoreLocation (~> 1.4)
+  - RxSwift (~> 5.0)
+  - RxTest (~> 5.1)
+  - SwiftLint (= 0.39.1)
+
+SPEC REPOS:
+  trunk:
+    - Action
+    - Alamofire
+    - RxAlamofire
+    - RxAppState
+    - RxBlocking
+    - RxCocoa
+    - RxCoreLocation
+    - RxRelay
+    - RxSwift
+    - RxTest
+    - SwiftLint
+
+SPEC CHECKSUMS:
+  Action: 0d14986aad0f1330aa27ce65d0cdeaacbb63d91c
+  Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
+  RxAlamofire: a2d7621de4c23a0c6e7b476b504acc32838ee341
+  RxAppState: b633d7370970ecb80081912ea08a7bf3eb644b4e
+  RxBlocking: 5f700a78cad61ce253ebd37c9a39b5ccc76477b4
+  RxCocoa: 32065309a38d29b5b0db858819b5bf9ef038b601
+  RxCoreLocation: 0cde68bd64dd1af3e7beaaac8a693ef613fd3a05
+  RxRelay: d77f7d771495f43c556cbc43eebd1bb54d01e8e9
+  RxSwift: 81470a2074fa8780320ea5fe4102807cb7118178
+  RxTest: 711632d5644dffbeb62c936a521b5b008a1e1faa
+  SwiftLint: 55e96a4a4d537d4a3156859fc1c54bd24851a046
+
+PODFILE CHECKSUM: a6420307f0c2a8771a48cdab7fcfd14fdc954b00
+
+COCOAPODS: 1.8.4
