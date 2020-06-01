@@ -8,9 +8,8 @@
 
 "Error-Title" = "Error";
 "Alert-Title" = "Alert";
-"Network-Message" = "Network is not available, try again later.";
-"NotFount-Message" = "City is not found.";
+"Network-Message" = "Network is not available, please try again later.";
+"NotFount-Message" = "The city is not found, please try again later.";
 "GPS-Message" = "Please allow location permission for weather search by GPS.";
-"DeleteAll-Message" = "Would you agree to delete all the recent search records?";
 "RecentSearchView-Title" = "Search Records";
 "RecentSearchView-Indicate" = "Sort by most recent search";

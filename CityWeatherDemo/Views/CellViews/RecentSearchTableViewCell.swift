@@ -61,9 +61,4 @@ class RecentSearchTableViewCell: UITableViewCell {
             imageIsChecked = false
         }
     }
-    
-    func eidtModeImageConfig(needChecked: Bool) {
-        imageIsChecked = needChecked
-        
-    }
 }
