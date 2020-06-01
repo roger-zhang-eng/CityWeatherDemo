@@ -14,6 +14,7 @@ class MockLocationManager: LocationServiceProtocol {
     let input: LocationManagerInput
     var output: LocationManagerOutput?
     var isLocationAllowed = true
+    private let gpsError = PublishSubject<ServiceError>()
     
     init() {
         input = LocationManagerInput(authorizationCheckTrigger: PublishSubject<Void>(),
@@ -26,6 +27,10 @@ class MockLocationManager: LocationServiceProtocol {
         output = LocationManagerOutput(locationData: input.requestLocationUpdate
                                                             .asObservable()
                                                             .map { return (-33.8699, 151.2100) },
-                                       error: Observable.just(ServiceError.gpsError))
+                                       error: gpsError.asObservable())
+    }
+    
+    func mockLocationNotAuthorised() {
+        isLocationAllowed = false
     }
 }

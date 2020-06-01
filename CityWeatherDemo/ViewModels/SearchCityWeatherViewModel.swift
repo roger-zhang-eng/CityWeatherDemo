@@ -104,6 +104,8 @@ class SearchCityWeatherViewModel: SearchCityWeatherProtocol {
     private let countryCodeDecode = PublishSubject<Bool>()
     private let serviceErrorTrigger = PublishSubject<ServiceError>()
     private let networkConnected = BehaviorRelay<Bool>(value: true)
+    private var needSearchLocation: SearchType?
+    private let searchCityTrigger = PublishSubject<SearchType>()
     
     init(weatherService: DownloadProtocol,
          countryCodeDecoder: CountryCodeDecodeProtocol,
@@ -147,7 +149,7 @@ class SearchCityWeatherViewModel: SearchCityWeatherProtocol {
     
     deinit {
         NotificationCenter.default.removeObserver(self)
-        networkMonitor.input.stopMonitor.onNext(())
+        networkMonitor.input.triggerMonitor.onNext((false))
     }
     
     @objc
@@ -182,11 +184,13 @@ class SearchCityWeatherViewModel: SearchCityWeatherProtocol {
         let displayCityIdTrigger = PublishSubject<SearchType>()
         displayCityIdTrigger
             .filter {
-                [unowned self] _ in
+                [unowned self] (searchValue) in
                 if !self.networkConnected.value {
                     self.serviceErrorTrigger
                         .onNext(ServiceError.network)
+                    self.needSearchLocation = searchValue
                 }
+                
                 return self.networkConnected.value
             }
             .bind(to: self.jsonFeedAction.inputs)
@@ -205,6 +209,7 @@ class SearchCityWeatherViewModel: SearchCityWeatherProtocol {
         jsonFeedAction = Action {
             [unowned self] searchInput in
             self.downloadIndicatorTrigger.onNext(true)
+            self.needSearchLocation = nil
             return self.weatherService.getCityWetherData(searchType: searchInput, appId: nil)
         }
         
@@ -246,13 +251,31 @@ class SearchCityWeatherViewModel: SearchCityWeatherProtocol {
             onDisposed: nil)
         .disposed(by: disposeBag)
         
+        searchCityTrigger
+            .filter {
+                [unowned self] (searchValue) in
+                if !self.networkConnected.value {
+                    self.needSearchLocation = searchValue
+                    self.serviceErrorTrigger.onNext(ServiceError.network)
+                }
+                return self.networkConnected.value
+            }
+            .bind(to: jsonFeedAction.inputs)
+            .disposed(by: disposeBag)
+        
         input.searchContentTrigger
             .filter{
-                [unowned self] _ in
+                [unowned self] (searchText) in
                 if self.networkConnected.value {
                     debugPrint("Request fetch weather data, during isDownloading \(self.downloadServiceRunning.value)")
                     return !self.downloadServiceRunning.value
                 } else {
+                    if let _ = UInt(searchText) {
+                        self.needSearchLocation = SearchType.zipCode(searchText, self.filteredCountryCode.value)
+                    } else {
+                        self.needSearchLocation = SearchType.cityName(searchText, self.filteredCountryCode.value)
+                    }
+                    
                     self.serviceErrorTrigger.onNext(ServiceError.network)
                     return false
                 }
@@ -277,7 +300,7 @@ class SearchCityWeatherViewModel: SearchCityWeatherProtocol {
         input.gpsLocationTrigger
             .subscribeOn(ConcurrentDispatchQueueScheduler.init(qos: .userInteractive))
             .subscribe(onNext: {
-                [unowned self] (_) in
+                [unowned self] () in
                 if self.networkConnected.value {
                     self.searchCurrentLocationWeather()
                 } else {
@@ -319,13 +342,28 @@ class SearchCityWeatherViewModel: SearchCityWeatherProtocol {
         )
         
         networkMonitor.output?.networkConnected
+            .distinctUntilChanged()
             .bind(to: networkConnected)
+            .disposed(by: disposeBag)
+        
+        self.networkConnected
+            .share()
+            .filter {
+                [unowned self] (isConnected) in
+                return (self.needSearchLocation != nil) && isConnected
+            }
+            .subscribe(onNext: {
+                [unowned self] _ in
+                debugPrint("Auto search loction weather by network recovery")
+                self.searchCityTrigger.onNext(self.needSearchLocation!)
+            }, onError: nil, onCompleted: nil, onDisposed: nil)
             .disposed(by: disposeBag)
         
         //Init country code list data parse in background
         countryCodeDecoder.initSetup()
         locationService.input.authorizationCheckTrigger.onNext(())
-        networkMonitor.input.startMonitor.onNext(())
+        
+        networkMonitor.input.triggerMonitor.onNext((true))
     }
     
     func loadSavedWeatherData() {
@@ -373,39 +411,15 @@ class SearchCityWeatherViewModel: SearchCityWeatherProtocol {
     }
     
     private func fetchWeatherDataByLocation(lat: Double, lon: Double) {
-        let fetchWeatherByLocationTrigger = PublishSubject<SearchType>()
-        fetchWeatherByLocationTrigger
-            .filter {
-                [unowned self] _ in
-                if !self.networkConnected.value {
-                    self.serviceErrorTrigger.onNext(ServiceError.network)
-                }
-                return self.networkConnected.value
-            }
-            .bind(to: self.jsonFeedAction.inputs)
-            .disposed(by: disposeBag)
-        
         let latStr = String(format: "%.4f", lat)
         let lonStr = String(format: "%.4f", lon)
-        fetchWeatherByLocationTrigger.onNext(.location(latStr, lonStr))
+        self.searchCityTrigger.onNext(.location(latStr, lonStr))
     }
     
     private func refreshLatestCityWeather() {
         guard let latestSavedWeatherData = self.savedLatestWeatherCity.savedWeatherData else {
             return
         }
-        
-        let refreshCityIdTrigger = PublishSubject<SearchType>()
-        refreshCityIdTrigger
-            .filter {
-                [unowned self] _ in
-                if !self.networkConnected.value {
-                    self.serviceErrorTrigger.onNext(ServiceError.network)
-                }
-                return self.networkConnected.value
-            }
-            .bind(to: self.jsonFeedAction.inputs)
-            .disposed(by: disposeBag)
         
         var searchType: SearchType?
         if latestSavedWeatherData.id != nil &&  latestSavedWeatherData.id! > 0 {
@@ -421,7 +435,7 @@ class SearchCityWeatherViewModel: SearchCityWeatherProtocol {
         }
         
         if searchType != nil {
-            refreshCityIdTrigger.onNext(searchType!)
+            self.searchCityTrigger.onNext(searchType!)
         }
     }
 }

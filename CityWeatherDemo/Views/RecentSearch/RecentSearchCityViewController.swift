@@ -29,6 +29,7 @@ class RecentSearchCityViewController: UIViewController {
         self.navigationItem.setLeftBarButton(cancelButton, animated: false)
         self.navigationItem.setRightBarButton(deleteAllButton, animated: false)
         
+        self.title = "RecentSearchView-Title".localized
         tableViewSetup()
         viewModelBinding()
     }
@@ -41,6 +42,7 @@ class RecentSearchCityViewController: UIViewController {
         self.tableView.dataSource = self
         self.tableView.delegate = self
         
+        tableView.register(RecentSearchHeaderView.self, forHeaderFooterViewReuseIdentifier: RecentSearchHeaderView.identifier)
         self.tableView.register(RecentSearchTableViewCell.nib, forCellReuseIdentifier: RecentSearchTableViewCell.identifier)
     }
     
@@ -154,5 +156,15 @@ extension RecentSearchCityViewController: UITableViewDataSource, UITableViewDele
             self.viewModel!.input.deleteCellItem.onNext(indexPath)
             tableView.deleteRows(at: [indexPath], with: .fade)
         }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 38
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+       let view = tableView.dequeueReusableHeaderFooterView(withIdentifier: RecentSearchHeaderView.identifier) as! RecentSearchHeaderView
+
+       return view
     }
 }

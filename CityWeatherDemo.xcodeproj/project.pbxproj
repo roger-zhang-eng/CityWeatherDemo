@@ -36,6 +36,7 @@
 		E51DB7A12483E2A000847E99 /* MockLocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB7A02483E2A000847E99 /* MockLocationManager.swift */; };
 		E51DB7A32483E2B700847E99 /* MockNetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB7A22483E2B700847E99 /* MockNetworkMonitor.swift */; };
 		E51DB7A52483E2CF00847E99 /* MockCityHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51DB7A42483E2CF00847E99 /* MockCityHelper.swift */; };
+		E52C1ED92484B0E700701DE5 /* RecentSearchHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E52C1ED82484B0E700701DE5 /* RecentSearchHeaderView.swift */; };
 		E54720382481057F00EA6DBC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E54720372481057F00EA6DBC /* AppDelegate.swift */; };
 		E547203C2481057F00EA6DBC /* SearchCityWeatherViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E547203B2481057F00EA6DBC /* SearchCityWeatherViewController.swift */; };
 		E547203F2481057F00EA6DBC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E547203D2481057F00EA6DBC /* Main.storyboard */; };
@@ -110,6 +111,7 @@
 		E51DB7A02483E2A000847E99 /* MockLocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockLocationManager.swift; sourceTree = "<group>"; };
 		E51DB7A22483E2B700847E99 /* MockNetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockNetworkMonitor.swift; sourceTree = "<group>"; };
 		E51DB7A42483E2CF00847E99 /* MockCityHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCityHelper.swift; sourceTree = "<group>"; };
+		E52C1ED82484B0E700701DE5 /* RecentSearchHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentSearchHeaderView.swift; sourceTree = "<group>"; };
 		E54720342481057F00EA6DBC /* CityWeatherDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CityWeatherDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E54720372481057F00EA6DBC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E547203B2481057F00EA6DBC /* SearchCityWeatherViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCityWeatherViewController.swift; sourceTree = "<group>"; };
@@ -331,6 +333,7 @@
 				E510A4362481B23D00D1A894 /* SunriseSunsetTableViewCell.xib */,
 				E510A4392481B27300D1A894 /* TopHeaderSectionView.swift */,
 				E510A43B2481B28000D1A894 /* TopHeaderSectionView.xib */,
+				E52C1ED82484B0E700701DE5 /* RecentSearchHeaderView.swift */,
 			);
 			path = CellViews;
 			sourceTree = "<group>";
@@ -572,6 +575,7 @@
 				E58FB73F24815BA1006C2426 /* CityWeatherHelper.swift in Sources */,
 				E510A44524824E0C00D1A894 /* LocationManager.swift in Sources */,
 				E58FB74C2481603E006C2426 /* RecentSearchCityViewController.swift in Sources */,
+				E52C1ED92484B0E700701DE5 /* RecentSearchHeaderView.swift in Sources */,
 				E58FB73A24815ADD006C2426 /* PickerTextField.swift in Sources */,
 				E510A44C24828C6500D1A894 /* RecentSearchTableViewCell.swift in Sources */,
 				E510A4372481B23D00D1A894 /* SunriseSunsetTableViewCell.swift in Sources */,

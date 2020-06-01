@@ -12,3 +12,5 @@
 "NotFount-Message" = "City is not found.";
 "GPS-Message" = "Please allow location permission for weather search by GPS.";
 "DeleteAll-Message" = "Would you agree to delete all the recent search records?";
+"RecentSearchView-Title" = "Search Records";
+"RecentSearchView-Indicate" = "Sort by most recent search";

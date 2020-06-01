@@ -16,18 +16,24 @@ class MockNetworkMonitor: NetworkMonitorProtocol {
     
     private let disposeBag = DisposeBag()
     
+    var mockConnected = true
+    
     init() {
-        input = NetworkMonitorInput(startMonitor: PublishSubject<Void>(),
-                                    stopMonitor: PublishSubject<Void>())
+        input = NetworkMonitorInput(triggerMonitor: PublishSubject<Bool>())
         setupBinding()
     }
     
     func setupBinding() {
         
-        output = NetworkMonitorOutput(networkConnected: input.startMonitor
+        output = NetworkMonitorOutput(networkConnected: input.triggerMonitor
             .asObservable()
-            .map {
-                return true
+            .map { [unowned self] _ in
+                return self.mockConnected
             })
+    }
+    
+    func mockNetworkDown() {
+        mockConnected = false
+        input.triggerMonitor.onNext(true)
     }
 }

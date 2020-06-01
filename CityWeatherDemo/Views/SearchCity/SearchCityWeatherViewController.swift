@@ -154,7 +154,6 @@ class SearchCityWeatherViewController: UIViewController {
         
         viewModel?.output?.error
             .skipUntil(rx.viewDidAppear)
-            //.observeOn(MainScheduler.instance)
             .delay(0.6, scheduler: MainScheduler.instance)
             .subscribe(onNext: {
                 [unowned self] (serviceError) in

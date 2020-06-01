@@ -12,8 +12,7 @@ import RxSwift
 import RxCocoa
 
 struct NetworkMonitorInput {
-    let startMonitor: PublishSubject<Void>
-    let stopMonitor: PublishSubject<Void>
+    let triggerMonitor: PublishSubject<Bool>
 }
 
 struct NetworkMonitorOutput {
@@ -31,28 +30,28 @@ class NetworkMonitor: NetworkMonitorProtocol {
     private let networkConnIndicator = PublishSubject<Bool>()
     private let disposeBag = DisposeBag()
     private let monitor = NWPathMonitor()
-    private let queue = DispatchQueue.global(qos: .background)
+    private let queue = DispatchQueue.global(qos: .default)
     private var netOn: Bool?
     private var connType: NWInterface.InterfaceType = .wifi
  
     init() {
-        input = NetworkMonitorInput(startMonitor: PublishSubject<Void>(),
-                                    stopMonitor: PublishSubject<Void>())
-        setupBinding()
+        input = NetworkMonitorInput(triggerMonitor: PublishSubject<Bool>())
         self.monitor.start(queue: queue)
+        
+        setupBinding()
         debugPrint("In Simulator: \(Platform.isSimulator)")
     }
  
     func setupBinding() {
-        input.startMonitor.subscribe(onNext: {
-            [unowned self] (_) in
-            self.startMonitoring()
-        }, onError: nil, onCompleted: nil, onDisposed: nil)
-        .disposed(by: disposeBag)
-        
-        input.stopMonitor.subscribe(onNext: {
-            [unowned self] (_) in
-            self.stopMonitoring()
+        input.triggerMonitor
+        .distinctUntilChanged()
+        .subscribe(onNext: {
+            [unowned self] (triggerState) in
+            if triggerState {
+                self.startMonitoring()
+            } else {
+                self.stopMonitoring()
+            }
         }, onError: nil, onCompleted: nil, onDisposed: nil)
         .disposed(by: disposeBag)
         
@@ -60,6 +59,7 @@ class NetworkMonitor: NetworkMonitorProtocol {
     }
     
     private func startMonitoring() {
+        debugPrint("start monitoring NW")
         self.monitor.pathUpdateHandler = {
             [unowned self] (path) in
             if self.netOn == nil {
@@ -80,6 +80,7 @@ class NetworkMonitor: NetworkMonitorProtocol {
     }
  
     private func stopMonitoring() {
+        debugPrint("stop monitoring NW")
         self.monitor.cancel()
     }
  
