@@ -5,7 +5,7 @@
 
 
 ## Demo	Video
-https://youtu.be/hKafZ6plM9U
+https://youtu.be/tFZAajnE36w
 
 ## Requirements
 - Xcode 11.3.1
@@ -26,7 +26,7 @@ https://youtu.be/hKafZ6plM9U
 - Search City View: 
   Nav bar left button is for recent search list. Nav Right refresh button is for refreshing current displayed city weather data. Nav right gps location button is for locating device position for search weather info. Country flag and code text could be displayed, and the filter button is for change country (preferred country codes are listed on top). Search bar is for city name or zip code input. Until clicking search button in keyboard, the search context will be used to search weather info.
 - Recent Search List: 
-  List all search history, that is sorted by most recent search. User could remove records, and check the record location current weather by tap the item.
+  List all search history, that is sorted by most recent search. User could delete multiple records by clicking edit button, and user could check the recorded location item's current weather by tap the item.
 
 ## Unit Test
 - WeatherDataServiceTest: It tests backend service data downloading and parsing, by network api call.
@@ -49,8 +49,8 @@ RxSwift MVVM design pattern, and Swift 5.1 source code with CocoaPods support
 - In order to support city search from different countries, cities json file is stored in app. CityWeatherHelper supports to decode in DispatchQueue (time consuming around 3s), not blocking UI. Once decoding done, it will post notification loadCitiesJSON to let user have chance to change country. 
 - App choose city name search by text content, and app choose zip code search by digital number content. (UK letter post code, web service do)
 - Search by GPS is supported by CoreLocation. 
-- Most recent city weather data is saved in UserDefaults. Every time app launch, it will auto load this offline weather info to display.
-- Recent search records are saved in UserDefaults, user could click one record to get latest this location weather info.
-- User could choose to remove one recent search record by swipe left, or delete all by clicking top right button.
+- Only the latest city weather data is saved in UserDefaults. Every time app launch, it will auto load this offline weather info to display.
+- Recent search records are saved in UserDefaults. User could select one to check this location's current weather.
+- User could delete one or more recorded search locations by selecting 'Edit' button.
 
 

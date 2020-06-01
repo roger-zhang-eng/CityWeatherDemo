@@ -25,14 +25,14 @@ class RecentSearchViewModelTest: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    func testDeleteAll() {
+    func testDelete() {
          let response = scheduler.createObserver(Bool.self)
          
         scheduler.createColdObservable([.next(10, ())])
-            .bind(to: self.viewModel.input.deleteAllTrigger)
+            .bind(to: self.viewModel.input.deleteTrigger)
             .disposed(by: disposeBag)
             
-        self.viewModel.output?.needConfirmDeleteAll
+        self.viewModel.output?.updateDisplay
             .map { return true }
             .bind(to: response)
             .disposed(by: disposeBag)
@@ -42,14 +42,14 @@ class RecentSearchViewModelTest: XCTestCase {
             XCTAssertEqual(response.events, [.next(10, true)])
     }
     
-    func testDeleteAllConfirm() {
+    func testEdit() {
          let response = scheduler.createObserver(Bool.self)
          
         scheduler.createColdObservable([.next(10, ())])
-            .bind(to: self.viewModel.input.deleteAllConfirm)
+            .bind(to: self.viewModel.input.editModeTrigger)
             .disposed(by: disposeBag)
             
-        self.viewModel.output?.refreshTableView
+        self.viewModel.output?.updateDisplay
             .map { return true }
             .bind(to: response)
             .disposed(by: disposeBag)
@@ -63,7 +63,7 @@ class RecentSearchViewModelTest: XCTestCase {
          let response = scheduler.createObserver(Bool.self)
          
         scheduler.createColdObservable([.next(10, ())])
-            .bind(to: self.viewModel.input.viewDismiss)
+            .bind(to: self.viewModel.input.cancelTrigger)
             .disposed(by: disposeBag)
             
         self.viewModel.output?.dismissView

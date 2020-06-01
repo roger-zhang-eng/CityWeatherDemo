@@ -17,21 +17,34 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="NCg-RP-iAS">
-                                <rect key="frame" x="0.0" y="88" width="414" height="808"/>
+                                <rect key="frame" x="0.0" y="128" width="414" height="768"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                             </tableView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sorted by most recent search" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9Lt-R1-DmC">
+                                <rect key="frame" x="16" y="88" width="382" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="nol-s8-Tax"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="NCg-RP-iAS" firstAttribute="leading" secondItem="fuo-Vh-dKB" secondAttribute="leading" id="8NJ-bq-Ppd"/>
+                            <constraint firstItem="9Lt-R1-DmC" firstAttribute="trailing" secondItem="fuo-Vh-dKB" secondAttribute="trailing" constant="-16" id="9X7-HO-EQc"/>
+                            <constraint firstItem="9Lt-R1-DmC" firstAttribute="top" secondItem="fuo-Vh-dKB" secondAttribute="top" id="LLv-oK-Bry"/>
+                            <constraint firstItem="NCg-RP-iAS" firstAttribute="top" secondItem="9Lt-R1-DmC" secondAttribute="bottom" id="bPm-qW-Htx"/>
                             <constraint firstItem="NCg-RP-iAS" firstAttribute="trailing" secondItem="fuo-Vh-dKB" secondAttribute="trailing" id="dVq-d6-uuC"/>
-                            <constraint firstItem="NCg-RP-iAS" firstAttribute="top" secondItem="fuo-Vh-dKB" secondAttribute="top" id="gUa-nX-RZo"/>
+                            <constraint firstItem="9Lt-R1-DmC" firstAttribute="leading" secondItem="fuo-Vh-dKB" secondAttribute="leading" constant="16" id="vLQ-l0-RTH"/>
                             <constraint firstAttribute="bottom" secondItem="NCg-RP-iAS" secondAttribute="bottom" id="xEx-UH-JHY"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="fuo-Vh-dKB"/>
                     </view>
                     <navigationItem key="navigationItem" id="qPY-16-PIV"/>
                     <connections>
+                        <outlet property="indicatorLabel" destination="9Lt-R1-DmC" id="BMT-Yq-CMA"/>
                         <outlet property="tableView" destination="NCg-RP-iAS" id="ai0-bi-0rU"/>
                     </connections>
                 </viewController>

@@ -13,9 +13,13 @@ import RxAppState
 
 class RecentSearchCityViewController: UIViewController {
 
+    @IBOutlet weak var indicatorLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
     private var cancelButton: UIBarButtonItem!
-    private var deleteAllButton: UIBarButtonItem!
+    //private var deleteAllButton: UIBarButtonItem!
+    
+    private var editButton: UIBarButtonItem!
+    private var deleteButton: UIBarButtonItem!
     
     var viewModel: RecentSearchProtocol?
     
@@ -25,11 +29,15 @@ class RecentSearchCityViewController: UIViewController {
         super.viewDidLoad()
 
         cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: nil)
-        deleteAllButton = UIBarButtonItem(title: "Delete All", style: .plain, target: self, action: nil)
+        deleteButton = UIBarButtonItem(title: "Delete", style: .plain, target: self, action: nil)
+        editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: nil)
         self.navigationItem.setLeftBarButton(cancelButton, animated: false)
-        self.navigationItem.setRightBarButton(deleteAllButton, animated: false)
+        self.navigationItem.setRightBarButton(editButton, animated: false)
         
         self.title = "RecentSearchView-Title".localized
+        self.indicatorLabel.text = "RecentSearchView-Indicate".localized
+        self.indicatorLabel.textColor = Appearance.Style.Colors.label
+        
         tableViewSetup()
         viewModelBinding()
     }
@@ -42,7 +50,6 @@ class RecentSearchCityViewController: UIViewController {
         self.tableView.dataSource = self
         self.tableView.delegate = self
         
-        tableView.register(RecentSearchHeaderView.self, forHeaderFooterViewReuseIdentifier: RecentSearchHeaderView.identifier)
         self.tableView.register(RecentSearchTableViewCell.nib, forCellReuseIdentifier: RecentSearchTableViewCell.identifier)
     }
     
@@ -61,14 +68,6 @@ class RecentSearchCityViewController: UIViewController {
             }, onError: nil, onCompleted: nil, onDisposed: nil)
         .disposed(by: disposeBag)
         
-        viewModel?.output?.needConfirmDeleteAll
-        .observeOn(MainScheduler.instance)
-            .subscribe(onNext: {
-                [unowned self] (_) in
-                self.alertToConfirmDeleteAll()
-            }, onError: nil, onCompleted: nil, onDisposed: nil)
-        .disposed(by: disposeBag)
-        
         viewModel?.output?.dismissView
             .skipUntil(rx.viewDidAppear)
             .observeOn(MainScheduler.instance)
@@ -78,39 +77,83 @@ class RecentSearchCityViewController: UIViewController {
             }, onError: nil, onCompleted: nil, onDisposed: nil)
         .disposed(by: disposeBag)
         
-        cancelButton.rx.tap
-            .bind(to: viewModel!.input.viewDismiss)
+        viewModel?.output?.updateDisplay
+            .skipUntil(rx.viewDidAppear)
+            .observeOn(MainScheduler.instance)
+            .subscribe(onNext: {
+                [unowned self] (_) in
+                self.updateDisplay()
+            }, onError: nil, onCompleted: nil, onDisposed: nil)
             .disposed(by: disposeBag)
         
-        deleteAllButton.rx.tap
-            .bind(to: viewModel!.input.deleteAllTrigger)
+        viewModel?.output?.updateDeleteNumber
+        .observeOn(MainScheduler.instance)
+        .subscribe(onNext: {
+            [unowned self] (number) in
+            self.indicatorLabel.text = "(" + String(number) + ") Selected"
+        }, onError: nil, onCompleted: nil, onDisposed: nil)
+        .disposed(by: disposeBag)
+        
+        viewModel?.output?.editModeTableViewCellCheckStateSwitchTriger
+            .delay(0.4, scheduler: MainScheduler.instance)
+            .subscribe(onNext: {
+                [unowned self] (indexPath) in
+                self.editModeTableViewCellSwitchCheckState(indexPath: indexPath)
+            }, onError: nil, onCompleted: nil, onDisposed: nil)
+            .disposed(by: disposeBag)
+        
+        cancelButton.rx.tap
+            .bind(to: viewModel!.input.cancelTrigger)
+            .disposed(by: disposeBag)
+        
+        editButton.rx.tap
+            .bind(to: viewModel!.input.editModeTrigger)
+            .disposed(by: disposeBag)
+        
+        deleteButton.rx.tap
+            .bind(to: viewModel!.input.deleteTrigger)
             .disposed(by: disposeBag)
         
         //First launch load tableView.
         rx.viewDidAppear
         .take(1)
+        .observeOn(MainScheduler.instance)
         .subscribe(onNext: {
             [unowned self] (_) in
             debugPrint("RecentSearch viewDidAppear")
-            self.viewModel?.input.refreshDataSourceTrigger.onNext(())
+            self.tableView.reloadData()
         }, onError: nil, onCompleted: nil, onDisposed: nil)
         .disposed(by: disposeBag)
     }
     
-    private func alertToConfirmDeleteAll() {
-        let alertController = UIAlertController(title: "Alert-Title".localized,
-                                                message: "DeleteAll-Message".localized,
-                                                preferredStyle: .alert)
-
-        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        let continueButton = UIAlertAction(title: "Continue", style: .destructive) {
-            [unowned self] (_) in
-            self.viewModel?.input.deleteAllConfirm.onNext(())
+    private func updateDisplay() {
+        guard viewModel != nil else {
+            return
         }
         
-        alertController.addAction(cancelButton)
-        alertController.addAction(continueButton)
-        self.present(alertController, animated: true, completion: nil)
+        if viewModel!.isEditMode {
+            self.navigationItem.setLeftBarButton(deleteButton, animated: true)
+            self.navigationItem.setRightBarButton(cancelButton, animated: true)
+            self.indicatorLabel.text = "(0) Selected"
+        } else {
+            self.navigationItem.setLeftBarButton(cancelButton, animated: true)
+            self.navigationItem.setRightBarButton(editButton, animated: true)
+            self.indicatorLabel.text = "RecentSearchView-Indicate".localized
+        }
+        
+        updateVisibleTableViewCell(isEditMode: viewModel!.isEditMode)
+    }
+    
+    private func updateVisibleTableViewCell(isEditMode: Bool) {
+        if let visibleCells = tableView.visibleCells as? [RecentSearchTableViewCell] {
+            for cell in visibleCells {
+                cell.switchMode(isEditMode: isEditMode)
+            }
+        }
+    }
+    
+    private func editModeTableViewCellSwitchCheckState(indexPath: IndexPath) {
+        tableView.reloadRows(at: [indexPath], with: .none)
     }
 }
 
@@ -131,7 +174,10 @@ extension RecentSearchCityViewController: UITableViewDataSource, UITableViewDele
             
         if let cell = tableView.dequeueReusableCell(withIdentifier: RecentSearchTableViewCell.identifier, for: indexPath) as? RecentSearchTableViewCell {
             let cellData = self.viewModel!.dataSource[indexPath.row]
-            cell.config(countryCode: cellData.country ?? "", cityName: cellData.name ?? "")
+            cell.config(countryCode: cellData.country ?? "",
+                        cityName: cellData.name ?? "",
+                        isEditMode: viewModel!.isEditMode,
+                        isChecked: viewModel!.deleteIndexSet.contains(indexPath.row))
             return cell
         }
         
@@ -143,28 +189,7 @@ extension RecentSearchCityViewController: UITableViewDataSource, UITableViewDele
             return
         }
         
-        self.viewModel!.input.presentCityWeather.onNext(indexPath)
+        self.viewModel!.input.selectCellItem.onNext(indexPath)
         tableView.deselectRow(at: indexPath, animated: true)
-    }
-    
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        guard viewModel != nil && indexPath.row < viewModel!.dataSource.count else {
-            return
-        }
-        
-        if editingStyle == .delete {
-            self.viewModel!.input.deleteCellItem.onNext(indexPath)
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 38
-    }
-    
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-       let view = tableView.dequeueReusableHeaderFooterView(withIdentifier: RecentSearchHeaderView.identifier) as! RecentSearchHeaderView
-
-       return view
     }
 }

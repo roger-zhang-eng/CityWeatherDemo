@@ -76,7 +76,7 @@ class SearchCityWeatherViewController: UIViewController {
         
         self.filteredCountry.textColor = Appearance.Style.Colors.label
         self.filteredCountry.delegate = self
-        let defaultCountryCode = "AU"
+        let defaultCountryCode = filteredCountry.text ?? "AU"
         self.flagLabel.text = defaultCountryCode.getFlag()
         self.filteredCountry.configurePicker(defaultText: defaultCountryCode, itemList: self.viewModel!.countryList) {
             [unowned self] (index) in
@@ -106,6 +106,7 @@ class SearchCityWeatherViewController: UIViewController {
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: {
                 [unowned self] (date) in
+                self.updateCountryCodeLabels()
                 self.tableView.reloadData()
             }, onError: nil, onCompleted: nil, onDisposed: nil)
             .disposed(by: disposeBag)
@@ -120,7 +121,6 @@ class SearchCityWeatherViewController: UIViewController {
                         self.view.endEditing(true)
                         self.showRefreshing()
                     } else {
-                        //SVProgressHUD.dismiss()
                         self.hideRefreshing()
                     }
                 
@@ -183,12 +183,21 @@ class SearchCityWeatherViewController: UIViewController {
         //First launch load most recent weather data.
         rx.viewDidAppear
         .take(1)
+        .observeOn(MainScheduler.instance)
         .subscribe(onNext: {
             [unowned self] (_) in
             debugPrint("SearchCityWeather viewDidAppear")
+            self.updateCountryCodeLabels()
             self.viewModel?.loadSavedWeatherData()
         }, onError: nil, onCompleted: nil, onDisposed: nil)
         .disposed(by: disposeBag)
+    }
+    
+    private func updateCountryCodeLabels() {
+        if let lastWeatherData = self.viewModel?.latestWeatherData, let countryCode = lastWeatherData.sys?.country {
+            self.filteredCountry.text = countryCode
+            self.flagLabel.text = countryCode.getFlag()
+        }
     }
     
     private func filterButtonTapped() {
