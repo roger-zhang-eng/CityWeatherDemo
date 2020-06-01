@@ -35,30 +35,6 @@ class UserDefaultsProperty<Value>: NSObject {
         }
     }
     
-    var boolValue: Bool {
-        get {
-            return UserDefaults.standard.bool(forKey: key)
-        }
-    }
-    
-    var intValue: Int {
-        get {
-            return UserDefaults.standard.integer(forKey: key)
-        }
-    }
-    
-    var dictionaryValue: [String: String]? {
-        get {
-            return UserDefaults.standard.dictionary(forKey: key) as? [String: String]
-        }
-    }
-    
-    var stringValue: String {
-        get {
-            return UserDefaults.standard.string(forKey: key) ?? ""
-        }
-    }
-    
     var savedWeatherData: WeatherCityData? {
         get {
             if let savedData = UserDefaults.standard.object(forKey: key) as? Data {

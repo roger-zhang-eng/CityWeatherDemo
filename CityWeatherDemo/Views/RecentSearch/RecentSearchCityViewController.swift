@@ -16,7 +16,6 @@ class RecentSearchCityViewController: UIViewController {
     @IBOutlet weak var indicatorLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
     private var cancelButton: UIBarButtonItem!
-    //private var deleteAllButton: UIBarButtonItem!
     
     private var editButton: UIBarButtonItem!
     private var deleteButton: UIBarButtonItem!
