@@ -47,7 +47,7 @@ RxSwift MVVM design pattern, and Swift 5.1 source code with CocoaPods support
 
 ## Requirement implementation
 - In order to support city search from different countries, cities json file is stored in app. CityWeatherHelper supports to decode in DispatchQueue (time consuming around 3s), not blocking UI. Once decoding done, it will post notification loadCitiesJSON to let user have chance to change country. 
-- App choose city name search by text content, and app choose zip code search by digital number content. (UK letter post code, web service do)
+- App choose city name search by text content, and app choose zip code search by digital number content. (Note: Web service do not support UK letter post code.)
 - Search by GPS is supported by CoreLocation. 
 - Only the latest city weather data is saved in UserDefaults. Every time app launch, it will auto load this offline weather info to display.
 - Recent search records are saved in UserDefaults. User could select one to check this location's current weather.
