@@ -23,9 +23,9 @@ enum WeatherDetailType {
         case .temperature(let text):
         return text
         case .wind(let text):
-        return text
+        return text + " meter/sec"
         case .humidity(let text):
-        return text
+        return text + " %"
         }
     }
     
