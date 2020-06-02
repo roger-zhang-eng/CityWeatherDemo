@@ -14,7 +14,8 @@ https://youtu.be/tFZAajnE36w
 - Cocoapod 1.8.4
 
 ## Installation Steps
-- Open CityWeatherDemo.xcworkspace by Xcode.
+- Open CityWeatherDemo.xcworkspace by Xcode. 
+(If project is not complete after opening by Xcode, please run 'pod install')
 
 ## Highlight functions
 - The latest city weather info and Search records will be stored in app permanently. Next app launch, the last city weather info is displayed first without network api call.
