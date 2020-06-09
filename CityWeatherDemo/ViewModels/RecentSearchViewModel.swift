@@ -36,18 +36,18 @@ protocol RecentSearchProtocol {
 
 class RecentSearchViewModel: RecentSearchProtocol {
     static let recentSearchCitiesKey: String = "recentSearchCitiesKey"
-    
+
     private var savedRecentSearch = UserDefaultsProperty<[CityInfo]>(key: RecentSearchViewModel.recentSearchCitiesKey)
-    
+
     var dataSource: [CityInfo] {
         get {
             return self.savedRecentSearch.savedSearchCities
         }
     }
-    
+
     let input: RecentSearchViewModelInput
     var output: RecentSearchViewModelOutput?
-    
+
     private let disposeBag = DisposeBag()
     var isEditMode = false
     private let internalDisplayUpdateTrigger = PublishSubject<Void>()
@@ -55,16 +55,16 @@ class RecentSearchViewModel: RecentSearchProtocol {
     private let internalRefreshTableViewTrigger = PublishSubject<Void>()
     private let internalUpdateDeleteNumberTrigger = PublishSubject<Int>()
     var deleteIndexSet = Set<Int>()
-    
+
     init() {
         input = RecentSearchViewModelInput(editModeTrigger: PublishSubject<Void>(),
                                            deleteTrigger: PublishSubject<Void>(),
                                            cancelTrigger: PublishSubject<Void>(),
                                            selectCellItem: PublishSubject<IndexPath>())
-        
+
         setupBinding()
     }
-    
+
     func setupBinding() {
         input.editModeTrigger
             .subscribe(onNext: {
@@ -73,7 +73,7 @@ class RecentSearchViewModel: RecentSearchProtocol {
                 self.internalDisplayUpdateTrigger.onNext(())
             }, onError: nil, onCompleted: nil, onDisposed: nil)
             .disposed(by: disposeBag)
-        
+
         input.deleteTrigger
         .subscribe(onNext: {
             [unowned self] (_) in
@@ -84,7 +84,7 @@ class RecentSearchViewModel: RecentSearchProtocol {
             self.internalDisplayUpdateTrigger.onNext(())
         }, onError: nil, onCompleted: nil, onDisposed: nil)
         .disposed(by: disposeBag)
-        
+
         input.cancelTrigger
         .subscribe(onNext: {
             [unowned self] (_) in
@@ -104,7 +104,7 @@ class RecentSearchViewModel: RecentSearchProtocol {
                 guard indexPath.row < self.dataSource.count else {
                     return
                 }
-                
+
                 if self.isEditMode {
                     if self.deleteIndexSet.contains(indexPath.row) {
                         self.deleteIndexSet.remove(indexPath.row)
@@ -114,16 +114,16 @@ class RecentSearchViewModel: RecentSearchProtocol {
                     self.internalUpdateDeleteNumberTrigger.onNext(self.deleteIndexSet.count)
                 } else {
                     let userData: [String: Any] = [
-                        "cityData" : self.dataSource[indexPath.row]
+                        "cityData": self.dataSource[indexPath.row]
                     ]
-                    
+
                     NotificationCenter.default.post(name: .updateCityWeather, object: nil, userInfo: userData)
-                    
+
                     self.internalViewDismissTrigger.onNext(())
                 }
             }, onError: nil, onCompleted: nil, onDisposed: nil)
             .disposed(by: disposeBag)
-        
+
         output = RecentSearchViewModelOutput(refreshTableView: internalRefreshTableViewTrigger.asObservable(),
                                              updateDisplay: internalDisplayUpdateTrigger.asObservable(),
                                              updateDeleteNumber: internalUpdateDeleteNumberTrigger.asObservable(),
@@ -134,23 +134,22 @@ class RecentSearchViewModel: RecentSearchProtocol {
                                                                                                 .asObservable(),
                                              dismissView: internalViewDismissTrigger.asObservable())
     }
-    
+
     private func deleteItemFromDataSource() {
-        guard deleteIndexSet.count > 0 && deleteIndexSet.count <= dataSource.count else {
+        guard !deleteIndexSet.isEmpty && deleteIndexSet.count <= dataSource.count else {
             return
         }
-        
+
         let originSource  = self.dataSource
         var shapedDataSource = [CityInfo]()
-        for (index, item) in originSource.enumerated()
-        {
+        for (index, item) in originSource.enumerated() {
             if deleteIndexSet.contains(index) {
                 continue
             } else {
                 shapedDataSource.append(item)
             }
         }
-        
+
         self.savedRecentSearch.savedSearchCities = shapedDataSource
     }
 }

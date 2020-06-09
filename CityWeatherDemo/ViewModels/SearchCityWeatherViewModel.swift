@@ -12,11 +12,12 @@ import RxSwift
 import Action
 
 enum WeatherDetailType {
+    // swiftlint:disable:next identifier_name
     case sunTime(Int, Int), description(String), temperature(String), wind(String), humidity(String)
-    
+
     func text() -> String {
         switch self {
-        case .sunTime(_, _):
+        case .sunTime:
             return ""
         case .description(let text):
             return text
@@ -28,7 +29,7 @@ enum WeatherDetailType {
         return text + " %"
         }
     }
-    
+
     func sunTimeData() -> (Int, Int) {
         switch self {
         case .sunTime(let sunrise, let sunset):
@@ -68,24 +69,24 @@ protocol SearchCityWeatherProtocol {
 class SearchCityWeatherViewModel: SearchCityWeatherProtocol {
     static let latestWeatherDataKey: String = "latestWeatherDataKey"
     static let latestWeatherTimeKey: String = "latestWeatherTimeKey"
-    
+
     let input: SearchCityViewModelInput
     var output: SearchCityViewModelOutput?
-    
+
     private let weatherService: DownloadProtocol
     private let countryCodeDecoder: CountryCodeDecodeProtocol
     private let locationService: LocationServiceProtocol
     private let networkMonitor: NetworkMonitorProtocol
     private let disposeBag = DisposeBag()
-    
+
     private let enableCountryCodeFilterTrigger: PublishSubject<Bool>
     private let downloadIndicatorTrigger: PublishSubject<Bool>
     private let downloadServiceRunning: BehaviorRelay<Bool>
-    
+
     private var savedLatestWeatherCity = UserDefaultsProperty<WeatherCityData>(key: SearchCityWeatherViewModel.latestWeatherDataKey)
     private var savedLatestWeatherTime = UserDefaultsProperty<Date>(key: SearchCityWeatherViewModel.latestWeatherTimeKey)
     private var savedRecentSearch = UserDefaultsProperty<[CityInfo]>(key: RecentSearchViewModel.recentSearchCitiesKey)
-    
+
     var countryList = [String]()
     var dataSource = [WeatherDetailType]()
     var dataUpdateTime: Date {
@@ -107,7 +108,7 @@ class SearchCityWeatherViewModel: SearchCityWeatherProtocol {
     private var needSearchLocation: SearchType?
     private let searchCityTrigger = PublishSubject<SearchType>()
     private var needRecordSearch = true
-    
+
     init(weatherService: DownloadProtocol,
          countryCodeDecoder: CountryCodeDecodeProtocol,
          locationService: LocationServiceProtocol,
@@ -117,18 +118,17 @@ class SearchCityWeatherViewModel: SearchCityWeatherProtocol {
         self.locationService = locationService
         self.networkMonitor = networkMonitor
         self.filteredCountryCode = BehaviorRelay<String>(value: "AU")
-        
+
         input = SearchCityViewModelInput(countryCodeUpdate: PublishSubject<String>(),
                       searchContentTrigger: PublishSubject<String>(),
                       gpsLocationTrigger: PublishSubject<Void>(),
                       refreshWeather: PublishSubject<Void>(),
                       recentSearchView: PublishSubject<Void>())
-        
+
         enableCountryCodeFilterTrigger = PublishSubject<Bool>()
         downloadIndicatorTrigger = PublishSubject<Bool>()
         downloadServiceRunning = BehaviorRelay<Bool>.init(value: false)
-        
-                
+
         NotificationCenter.default.rx
             .notification(.loadCityList)
             .subscribe(onNext: {
@@ -136,7 +136,7 @@ class SearchCityWeatherViewModel: SearchCityWeatherProtocol {
                 self.handleLoadCityListNotification(notification)
             }, onError: nil, onCompleted: nil, onDisposed: nil)
             .disposed(by: disposeBag)
-        
+
         NotificationCenter.default.rx
         .notification(.updateCityWeather)
         .subscribe(onNext: {
@@ -144,28 +144,28 @@ class SearchCityWeatherViewModel: SearchCityWeatherProtocol {
             self.presentSelectedRecentSearch(notification)
         }, onError: nil, onCompleted: nil, onDisposed: nil)
         .disposed(by: disposeBag)
-        
+
         setupBinding()
     }
-    
+
     deinit {
         NotificationCenter.default.removeObserver(self)
         networkMonitor.input.triggerMonitor.onNext((false))
     }
-    
+
     @objc
     private func handleLoadCityListNotification(_ notification: Notification) {
         countryList = countryCodeDecoder.countryList()
         countryCodeDecode.onNext(true)
     }
-    
+
     @objc
     func presentSelectedRecentSearch(_ notification: Notification) {
         guard let userData = notification.userInfo as? [String: CityInfo],
             let cityInfo = userData["cityData"] else {
             return
         }
-        
+
         var searchType: SearchType?
         if cityInfo.id != nil &&  cityInfo.id! > 0 {
             searchType = SearchType.cityId(String(cityInfo.id!))
@@ -177,43 +177,135 @@ class SearchCityWeatherViewModel: SearchCityWeatherProtocol {
             && cityInfo.country != nil && !cityInfo.country!.isEmpty {
             searchType = SearchType.cityName(cityInfo.name!, cityInfo.country!)
         }
-        
+
         guard searchType != nil else {
             return
         }
-        
+
         needRecordSearch = false
         searchCityTrigger.onNext(searchType!)
     }
-    
+
     private func setupBinding() {
-        let response = BehaviorRelay<WeatherCityData?>(value: nil)
-        
+
+        downloadServiceBinding()
+        inputBinding()
+
         downloadIndicatorTrigger
             .bind(to: downloadServiceRunning)
             .disposed(by: disposeBag)
-        
+
+        searchCityTrigger
+            .filter {
+                [unowned self] (searchValue) in
+                if !self.networkConnected.value {
+                    self.needSearchLocation = searchValue
+                    self.serviceErrorTrigger.onNext(ServiceError.network)
+                }
+                return self.networkConnected.value
+            }
+            .bind(to: jsonFeedAction.inputs)
+            .disposed(by: disposeBag)
+
+        output = SearchCityViewModelOutput(
+                        refreshTableView: weatherDataRefreshTrigger.asObservable(),
+                        presentRecentSearch: input.recentSearchView
+                                            .asObservable(),
+                        isLoading: downloadServiceRunning
+                                    .asObservable(),
+                        countryCodeDone: countryCodeDecode.asObservable(),
+                        error: serviceErrorTrigger.asObservable()
+        )
+
+        locationServiceBinding()
+        networkBinding()
+
+        //Init country code list data parse in background
+        initLoadBinding()
+    }
+
+    private func inputBinding() {
+        input.searchContentTrigger
+            .filter {
+                [unowned self] (searchText) in
+                if self.networkConnected.value {
+                    debugPrint("Request fetch weather data, during isDownloading \(self.downloadServiceRunning.value)")
+                    return !self.downloadServiceRunning.value
+                } else {
+                    if let _ = UInt(searchText) {
+                        self.needSearchLocation = SearchType.zipCode(searchText, self.filteredCountryCode.value)
+                    } else {
+                        self.needSearchLocation = SearchType.cityName(searchText, self.filteredCountryCode.value)
+                    }
+
+                    self.serviceErrorTrigger.onNext(ServiceError.network)
+                    return false
+                }
+            }
+            .map({
+                [unowned self] (text) in
+                self.needRecordSearch = true
+                var searchType = SearchType.cityName(text, self.filteredCountryCode.value)
+                if let _ = UInt(text) {
+                    searchType = SearchType.zipCode(text, self.filteredCountryCode.value)
+                }
+
+                return searchType
+            })
+            .subscribeOn(ConcurrentDispatchQueueScheduler.init(qos: .userInteractive))
+            .bind(to: jsonFeedAction.inputs)
+            .disposed(by: disposeBag)
+
+        input.countryCodeUpdate
+            .bind(to: filteredCountryCode)
+            .disposed(by: disposeBag)
+
+        input.gpsLocationTrigger
+            .subscribeOn(ConcurrentDispatchQueueScheduler.init(qos: .userInteractive))
+            .subscribe(onNext: {
+                [unowned self] () in
+                if self.networkConnected.value {
+                    self.needRecordSearch = true
+                    self.searchCurrentLocationWeather()
+                } else {
+                    self.serviceErrorTrigger.onNext(ServiceError.network)
+                }
+            }, onError: nil, onCompleted: nil, onDisposed: nil)
+            .disposed(by: disposeBag)
+
+        input.refreshWeather
+            .subscribe(onNext: {
+                [unowned self] (_) in
+                self.needRecordSearch = false
+                self.refreshLatestCityWeather()
+            }, onError: nil, onCompleted: nil, onDisposed: nil)
+            .disposed(by: disposeBag)
+    }
+
+    private func downloadServiceBinding() {
+        let response = BehaviorRelay<WeatherCityData?>(value: nil)
+
         jsonFeedAction = Action {
             [unowned self] searchInput in
             self.downloadIndicatorTrigger.onNext(true)
             self.needSearchLocation = nil
             return self.weatherService.getCityWetherData(searchType: searchInput, appId: nil)
         }
-        
+
         jsonFeedAction.elements
             .bind(to: response)
             .disposed(by: disposeBag)
-        
+
         jsonFeedAction.errors
         .debug()
             .subscribe(onNext: {
                 [unowned self] (actionError) in
-                
+
                 self.downloadIndicatorTrigger.onNext(false)
                 self.serviceErrorTrigger.onNext(ServiceError.notFound)
             }, onError: nil, onCompleted: nil, onDisposed: nil)
             .disposed(by: disposeBag)
-        
+
         //Record jsonFeed data
         response
         .filter { $0 != nil }
@@ -229,7 +321,7 @@ class SearchCityWeatherViewModel: SearchCityWeatherProtocol {
             },
             onError: {
                 [unowned self] (serviceError) in
-                
+
                 debugPrint("Download faild by city not found: \(serviceError.localizedDescription)")
                 self.serviceErrorTrigger.onNext(ServiceError.notFound)
                 self.downloadIndicatorTrigger.onNext(false)
@@ -237,82 +329,16 @@ class SearchCityWeatherViewModel: SearchCityWeatherProtocol {
             onCompleted: nil,
             onDisposed: nil)
         .disposed(by: disposeBag)
-        
-        searchCityTrigger
-            .filter {
-                [unowned self] (searchValue) in
-                if !self.networkConnected.value {
-                    self.needSearchLocation = searchValue
-                    self.serviceErrorTrigger.onNext(ServiceError.network)
-                }
-                return self.networkConnected.value
-            }
-            .bind(to: jsonFeedAction.inputs)
-            .disposed(by: disposeBag)
-        
-        input.searchContentTrigger
-            .filter{
-                [unowned self] (searchText) in
-                if self.networkConnected.value {
-                    debugPrint("Request fetch weather data, during isDownloading \(self.downloadServiceRunning.value)")
-                    return !self.downloadServiceRunning.value
-                } else {
-                    if let _ = UInt(searchText) {
-                        self.needSearchLocation = SearchType.zipCode(searchText, self.filteredCountryCode.value)
-                    } else {
-                        self.needSearchLocation = SearchType.cityName(searchText, self.filteredCountryCode.value)
-                    }
-                    
-                    self.serviceErrorTrigger.onNext(ServiceError.network)
-                    return false
-                }
-            }
-            .map({
-                [unowned self] (text) in
-                self.needRecordSearch = true
-                var searchType = SearchType.cityName(text, self.filteredCountryCode.value)
-                if let _ = UInt(text) {
-                    searchType = SearchType.zipCode(text, self.filteredCountryCode.value)
-                }
-                
-                return searchType
-            })
-            .subscribeOn(ConcurrentDispatchQueueScheduler.init(qos: .userInteractive))
-            .bind(to: jsonFeedAction.inputs)
-            .disposed(by: disposeBag)
-        
-        input.countryCodeUpdate
-            .bind(to: filteredCountryCode)
-            .disposed(by: disposeBag)
-        
-        input.gpsLocationTrigger
-            .subscribeOn(ConcurrentDispatchQueueScheduler.init(qos: .userInteractive))
-            .subscribe(onNext: {
-                [unowned self] () in
-                if self.networkConnected.value {
-                    self.needRecordSearch = true
-                    self.searchCurrentLocationWeather()
-                } else {
-                    self.serviceErrorTrigger.onNext(ServiceError.network)
-                }
-            }, onError: nil, onCompleted: nil, onDisposed: nil)
-            .disposed(by: disposeBag)
-        
-        input.refreshWeather
-            .subscribe(onNext: {
-                [unowned self] (_) in
-                self.needRecordSearch = false
-                self.refreshLatestCityWeather()
-            }, onError: nil, onCompleted: nil, onDisposed: nil)
-            .disposed(by: disposeBag)
-        
+    }
+
+    private func locationServiceBinding() {
         locationService.output?.locationData
             .subscribe(onNext: {
                 [unowned self] (lat, lon) in
                 self.fetchWeatherDataByLocation(lat: lat, lon: lon)
             }, onError: nil, onCompleted: nil, onDisposed: nil)
             .disposed(by: disposeBag)
-        
+
         locationService.output?.error
             .subscribe(onNext: {
                 [unowned self] (serviceError) in
@@ -320,22 +346,14 @@ class SearchCityWeatherViewModel: SearchCityWeatherProtocol {
                 self.serviceErrorTrigger.onNext(serviceError)
             }, onError: nil, onCompleted: nil, onDisposed: nil)
             .disposed(by: disposeBag)
-        
-        output = SearchCityViewModelOutput(
-                        refreshTableView: weatherDataRefreshTrigger.asObservable(),
-                        presentRecentSearch: input.recentSearchView
-                                            .asObservable(),
-                        isLoading: downloadServiceRunning
-                                    .asObservable(),
-                        countryCodeDone: countryCodeDecode.asObservable(),
-                        error: serviceErrorTrigger.asObservable()
-        )
-        
+    }
+
+    private func networkBinding() {
         networkMonitor.output?.networkConnected
             .distinctUntilChanged()
             .bind(to: networkConnected)
             .disposed(by: disposeBag)
-        
+
         self.networkConnected
             .share()
             .filter {
@@ -349,38 +367,39 @@ class SearchCityWeatherViewModel: SearchCityWeatherProtocol {
                 self.searchCityTrigger.onNext(self.needSearchLocation!)
             }, onError: nil, onCompleted: nil, onDisposed: nil)
             .disposed(by: disposeBag)
-        
-        //Init country code list data parse in background
+    }
+
+    private func initLoadBinding() {
         countryCodeDecoder.initSetup()
         locationService.input.authorizationCheckTrigger.onNext(())
-        
+
         networkMonitor.input.triggerMonitor.onNext((true))
     }
-    
+
     func loadSavedWeatherData() {
         guard let latestSavedWeatherData = self.savedLatestWeatherCity.savedWeatherData else {
             return
         }
-        
+
         setupDataSource(cityWeatherData: latestSavedWeatherData)
         weatherDataRefreshTrigger.onNext(())
     }
-    
+
     private func setupDataSource(cityWeatherData: WeatherCityData) {
         dataSource.removeAll()
-        
+
         dataSource.append(WeatherDetailType.sunTime((cityWeatherData.sys?.sunrise ?? 0), (cityWeatherData.sys?.sunset ?? 0)))
         dataSource.append(WeatherDetailType.description(cityWeatherData.weather?.first?.description ?? ""))
-        dataSource.append(WeatherDetailType.temperature("\(cityWeatherData.main?.temp_min ?? 0)°C --- \(cityWeatherData.main?.temp_max ?? 0)°C"))
+        dataSource.append(WeatherDetailType.temperature("\(cityWeatherData.main?.tempMin ?? 0)°C --- \(cityWeatherData.main?.tempMax ?? 0)°C"))
         dataSource.append(WeatherDetailType.wind(String(cityWeatherData.wind?.speed ?? 0)))
         dataSource.append(WeatherDetailType.humidity(String(cityWeatherData.main?.humidity ?? 0)))
     }
-    
+
     private func recordSearchHistory(weatherData: WeatherCityData) {
         guard needRecordSearch else {
             return
         }
-        
+
         var searchCity = CityInfo()
         searchCity.country = weatherData.sys?.country ?? ""
         searchCity.name = weatherData.name ?? ""
@@ -388,14 +407,14 @@ class SearchCityWeatherViewModel: SearchCityWeatherProtocol {
         searchCity.state = ""
         searchCity.lat = weatherData.coord?.lat
         searchCity.lon = weatherData.coord?.lon
-        
+
         debugPrint("record Search by cityName: \(searchCity.name), cityId: \(searchCity.id)")
-        
+
         var savedRecords = self.savedRecentSearch.savedSearchCities
         savedRecords.insert(searchCity, at: 0)
         self.savedRecentSearch.savedSearchCities = savedRecords
     }
-    
+
     private func searchCurrentLocationWeather() {
         if locationService.isLocationAllowed {
             self.downloadIndicatorTrigger.onNext(true)
@@ -404,18 +423,18 @@ class SearchCityWeatherViewModel: SearchCityWeatherProtocol {
             self.serviceErrorTrigger.onNext(ServiceError.gpsError)
         }
     }
-    
+
     private func fetchWeatherDataByLocation(lat: Double, lon: Double) {
         let latStr = String(format: "%.4f", lat)
         let lonStr = String(format: "%.4f", lon)
         self.searchCityTrigger.onNext(.location(latStr, lonStr))
     }
-    
+
     private func refreshLatestCityWeather() {
         guard let latestSavedWeatherData = self.savedLatestWeatherCity.savedWeatherData else {
             return
         }
-        
+
         var searchType: SearchType?
         if latestSavedWeatherData.id != nil &&  latestSavedWeatherData.id! > 0 {
             searchType = SearchType.cityId(String(latestSavedWeatherData.id!))
@@ -428,7 +447,7 @@ class SearchCityWeatherViewModel: SearchCityWeatherProtocol {
         && latestSavedWeatherData.sys?.country != nil && !latestSavedWeatherData.sys!.country!.isEmpty {
             searchType = SearchType.cityName(latestSavedWeatherData.name!, latestSavedWeatherData.sys!.country!)
         }
-        
+
         if searchType != nil {
             self.searchCityTrigger.onNext(searchType!)
         }

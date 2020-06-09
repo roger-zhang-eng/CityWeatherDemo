@@ -15,7 +15,7 @@ class RecentSearchViewModelTest: XCTestCase {
     let disposeBag = DisposeBag()
     var scheduler: TestScheduler!
     var viewModel: RecentSearchViewModel!
-    
+
     override func setUp() {
         scheduler = TestScheduler(initialClock: 0)
         viewModel = RecentSearchViewModel()
@@ -27,52 +27,52 @@ class RecentSearchViewModelTest: XCTestCase {
 
     func testDelete() {
          let response = scheduler.createObserver(Bool.self)
-         
+
         scheduler.createColdObservable([.next(10, ())])
             .bind(to: self.viewModel.input.deleteTrigger)
             .disposed(by: disposeBag)
-            
+
         self.viewModel.output?.updateDisplay
             .map { return true }
             .bind(to: response)
             .disposed(by: disposeBag)
 
             scheduler.start()
-            
+
             XCTAssertEqual(response.events, [.next(10, true)])
     }
-    
+
     func testEdit() {
          let response = scheduler.createObserver(Bool.self)
-         
+
         scheduler.createColdObservable([.next(10, ())])
             .bind(to: self.viewModel.input.editModeTrigger)
             .disposed(by: disposeBag)
-            
+
         self.viewModel.output?.updateDisplay
             .map { return true }
             .bind(to: response)
             .disposed(by: disposeBag)
 
             scheduler.start()
-            
+
             XCTAssertEqual(response.events, [.next(10, true)])
     }
-    
+
     func testViewDismiss() {
          let response = scheduler.createObserver(Bool.self)
-         
+
         scheduler.createColdObservable([.next(10, ())])
             .bind(to: self.viewModel.input.cancelTrigger)
             .disposed(by: disposeBag)
-            
+
         self.viewModel.output?.dismissView
             .map { return true }
             .bind(to: response)
             .disposed(by: disposeBag)
 
             scheduler.start()
-            
+
             XCTAssertEqual(response.events, [.next(10, true)])
     }
 

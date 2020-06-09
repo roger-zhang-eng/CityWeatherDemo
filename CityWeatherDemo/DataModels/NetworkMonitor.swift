@@ -33,15 +33,15 @@ class NetworkMonitor: NetworkMonitorProtocol {
     private let queue = DispatchQueue.global(qos: .default)
     private var netOn: Bool?
     private var connType: NWInterface.InterfaceType = .wifi
- 
+
     init() {
         input = NetworkMonitorInput(triggerMonitor: PublishSubject<Bool>())
         self.monitor.start(queue: queue)
-        
+
         setupBinding()
         debugPrint("In Simulator: \(Platform.isSimulator)")
     }
- 
+
     func setupBinding() {
         input.triggerMonitor
         .distinctUntilChanged()
@@ -54,10 +54,10 @@ class NetworkMonitor: NetworkMonitorProtocol {
             }
         }, onError: nil, onCompleted: nil, onDisposed: nil)
         .disposed(by: disposeBag)
-        
+
         output = NetworkMonitorOutput(networkConnected: networkConnIndicator.asObservable())
     }
-    
+
     private func startMonitoring() {
         debugPrint("start monitoring NW")
         self.monitor.pathUpdateHandler = {
@@ -71,19 +71,19 @@ class NetworkMonitor: NetworkMonitorProtocol {
                     self.netOn = (path.status == .satisfied)
                 }
             }
-            
+
             self.connType = self.checkConnectionTypeForPath(path)
             debugPrint("NW monitor: netOn \(self.netOn), connType \(self.connType)")
-            
+
             self.networkConnIndicator.onNext(self.netOn!)
         }
     }
- 
+
     private func stopMonitoring() {
         debugPrint("stop monitoring NW")
         self.monitor.cancel()
     }
- 
+
     private func checkConnectionTypeForPath(_ path: NWPath) -> NWInterface.InterfaceType {
         if path.usesInterfaceType(.wifi) {
             return .wifi
@@ -92,7 +92,7 @@ class NetworkMonitor: NetworkMonitorProtocol {
         } else if path.usesInterfaceType(.cellular) {
             return .cellular
         }
- 
+
         return .other
     }
 }

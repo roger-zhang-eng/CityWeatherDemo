@@ -15,7 +15,7 @@ def common_pods
   pod 'RxAlamofire', '~> 5.1'
   pod "RxAppState", '1.6.0'
   pod 'RxCoreLocation', '~> 1.4'
-  pod 'SwiftLint', '0.39.1'
+  pod 'SwiftLint', '~> 0.39'
 end
 
 target 'CityWeatherDemo' do

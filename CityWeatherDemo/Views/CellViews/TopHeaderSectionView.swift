@@ -12,7 +12,7 @@ class TopHeaderSectionView: UITableViewHeaderFooterView {
 
     @IBOutlet weak var timeLabel: UILabel!
     @IBOutlet weak var cityLabel: UILabel!
-    
+
     static var identifier: String {
         return String(describing: self)
     }

@@ -13,22 +13,22 @@ protocol CountryCodeDecodeProtocol {
     func countryList() -> [String]
 }
 
-class CityWeatherHelper: CountryCodeDecodeProtocol {    
+class CityWeatherHelper: CountryCodeDecodeProtocol {
     private var cityListRawArray: [CityInfo]?
-    
+
     private let preferenceCountryCodes = Bundle.preferenceCountryCodes
-    
+
     init() { }
-    
+
     func initSetup() {
         guard cityListRawArray == nil else {
             NotificationCenter.default.post(name: .loadCityList, object: nil)
             return
         }
-        
+
         loadCityList()
     }
-    
+
     private func loadCityList() {
         DispatchQueue.global(qos: .userInteractive).async {
             [weak self] in
@@ -42,14 +42,14 @@ class CityWeatherHelper: CountryCodeDecodeProtocol {
             }
         }
     }
-    
+
     func countryList() -> [String] {
-        guard cityListRawArray != nil && cityListRawArray!.count > 0 else {
+        guard cityListRawArray != nil && !cityListRawArray!.isEmpty else {
             return preferenceCountryCodes
         }
-        
-        let countrySet: Set<String> = Set(cityListRawArray!.map { $0.country ?? "" } )
-        if preferenceCountryCodes.count > 0 {
+
+        let countrySet: Set<String> = Set(cityListRawArray!.map { $0.country ?? "" })
+        if !preferenceCountryCodes.isEmpty {
             let preferenceSet = Set(preferenceCountryCodes)
             let fullCountryCodes = Array(countrySet).sorted { $0 < $1 }
             var shapedCountryCode = preferenceCountryCodes
@@ -58,18 +58,18 @@ class CityWeatherHelper: CountryCodeDecodeProtocol {
                     shapedCountryCode.append(countryCode)
                 }
             }
-            
+
             return shapedCountryCode
         } else {
             return Array(countrySet).sorted { $0 < $1 }
         }
     }
-    
+
     private func loadCitiesJSON() -> [CityInfo]? {
         if let url = Bundle.main.url(forResource: "city.list", withExtension: "json") {
 
             do {
-                
+
                 let data = try Data(contentsOf: url)
                 let cityArray = try JSONDecoder().decode([CityInfo].self, from: data)
                 debugPrint("decode done")

@@ -15,6 +15,6 @@ struct CityInfo: Codable {
     var country: String?
     var lat: Double?
     var lon: Double?
-    
+
     init() {}
 }

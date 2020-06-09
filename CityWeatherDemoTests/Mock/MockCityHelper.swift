@@ -10,7 +10,7 @@ import Foundation
 
 class MockCityHelper: CountryCodeDecodeProtocol {
     func initSetup() {}
-    
+
     func countryList() -> [String] {
         return ["US", "AU", "CA", "NZ"]
     }

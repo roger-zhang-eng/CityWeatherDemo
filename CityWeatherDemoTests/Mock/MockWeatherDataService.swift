@@ -28,7 +28,7 @@ class MockWeatherDataService: DownloadProtocol {
             return nil
         }
     }
-    
+
     func getCityWetherData(searchType: SearchType, appId: String?) -> Observable<(WeatherCityData)> {
         if let mockData = mockupWeatherData() {
             return Observable.just(mockData)

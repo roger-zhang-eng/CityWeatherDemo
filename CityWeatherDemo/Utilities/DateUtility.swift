@@ -9,14 +9,14 @@
 import Foundation
 
 class DateUtility {
-    
+
     static var mediumDateFormatter: DateFormatter = {
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short
         dateFormatter.timeStyle = .medium
         return dateFormatter
     }()
-    
+
     static var sunriseTimeFormatter: DateFormatter = {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "h:mm a"

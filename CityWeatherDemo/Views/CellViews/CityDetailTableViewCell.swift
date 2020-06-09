@@ -12,15 +12,15 @@ class CityDetailTableViewCell: UITableViewCell {
 
     @IBOutlet weak var iconImageView: UIImageView!
     @IBOutlet weak var contentLabel: UILabel!
-    
-    static var nib:UINib {
+
+    static var nib: UINib {
         return UINib(nibName: identifier, bundle: nil)
     }
-    
+
     static var identifier: String {
         return String(describing: self)
     }
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
         self.backgroundColor = Appearance.Style.Colors.tableViewCellGroupBackground

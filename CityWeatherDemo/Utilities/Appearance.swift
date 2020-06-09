@@ -27,7 +27,7 @@ public enum DefaultStyle {
                 return .white
             }
         }()
-        
+
         public static let tableViewGroupBackground: UIColor = {
             if #available(iOS 13.0, *) {
                 return UIColor.systemGroupedBackground
@@ -35,7 +35,7 @@ public enum DefaultStyle {
                 return .white
             }
         }()
-        
+
         public static let tableViewCellGroupBackground: UIColor = {
             if #available(iOS 13.0, *) {
                 return UIColor.secondarySystemGroupedBackground
@@ -49,4 +49,3 @@ public enum DefaultStyle {
 class Appearance {
     static let Style = DefaultStyle.self
 }
-

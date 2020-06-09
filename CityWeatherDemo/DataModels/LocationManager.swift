@@ -31,26 +31,26 @@ protocol LocationServiceProtocol {
 class LocationManager: LocationServiceProtocol {
     private let disposeBag = DisposeBag()
     private let manager = CLLocationManager()
-    
+
     //Input
     let input: LocationManagerInput
     //Output
     var output: LocationManagerOutput?
-    
+
     private let locationAuthorization = PublishSubject<Bool>()
     private let locationDataUpdate = PublishSubject<(Double, Double)>()
     private var lastLocation: CLLocationCoordinate2D?
     var isLocationAllowed = true
-    
+
     init() {
         input = LocationManagerInput(authorizationCheckTrigger: PublishSubject<Void>(),
                                      requestLocationUpdate: PublishSubject<Void>())
-        
+
         manager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
         manager.distanceFilter = 3000
         setupBinding()
     }
-    
+
     func setupBinding() {
         self.input.authorizationCheckTrigger
             .subscribe(onNext: {
@@ -58,14 +58,14 @@ class LocationManager: LocationServiceProtocol {
                 self.manager.requestWhenInUseAuthorization()
             }, onError: nil, onCompleted: nil, onDisposed: nil)
             .disposed(by: disposeBag)
-        
+
         self.input.requestLocationUpdate
             .subscribe(onNext: {
                 [unowned self] (_) in
                 self.manager.startUpdatingLocation()
             }, onError: nil, onCompleted: nil, onDisposed: nil)
             .disposed(by: disposeBag)
-        
+
         self.manager.rx
         .didChangeAuthorization
         .debug()
@@ -80,7 +80,7 @@ class LocationManager: LocationServiceProtocol {
             }
         }, onError: nil, onCompleted: nil, onDisposed: nil)
         .disposed(by: disposeBag)
-        
+
         self.manager.rx
         .didUpdateLocations
             .subscribe(onNext: {
@@ -89,11 +89,11 @@ class LocationManager: LocationServiceProtocol {
                 let latestLoc = locations.last!
                 let eventDate = latestLoc.timestamp
                 let howRecent = eventDate.timeIntervalSinceNow
-                
+
                 if abs(howRecent) < 30 {
                     print("In didUpdateLocations: Locaion: Latitude \(latestLoc.coordinate.latitude.description), Longtitude \(latestLoc.coordinate.longitude.description)")
                     self.lastLocation = latestLoc.coordinate
-                    self.locationDataUpdate.onNext((latestLoc.coordinate.latitude ,latestLoc.coordinate.longitude))
+                    self.locationDataUpdate.onNext((latestLoc.coordinate.latitude, latestLoc.coordinate.longitude))
                     self.manager.stopUpdatingLocation()
                 } else {
                     print("In didUpdateLocations: The got location address is too old! and lastLocation is nil \(self.lastLocation == nil)")
@@ -102,12 +102,10 @@ class LocationManager: LocationServiceProtocol {
                         self.manager.stopUpdatingLocation()
                     }
                 }
-                
-                
+
             }, onError: nil, onCompleted: nil, onDisposed: nil)
         .disposed(by: disposeBag)
-        
-        
+
         output = LocationManagerOutput(locationData: self.locationDataUpdate.asObservable(),
                                        error: self.manager.rx.didError
                                         .asObservable()

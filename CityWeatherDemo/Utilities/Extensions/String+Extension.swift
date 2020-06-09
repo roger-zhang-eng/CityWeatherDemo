@@ -18,7 +18,7 @@ extension String {
             .map(String.init)
             .joined()
     }
-    
+
     fileprivate var enGeneralBundle: Bundle? {
         get {
             if let path = Bundle.main.path(forResource: "en", ofType: "lproj") {
@@ -28,7 +28,7 @@ extension String {
             }
         }
     }
-    
+
     var localized: String {
         if enGeneralBundle != nil {
             return enGeneralBundle!.localizedString(forKey: self, value: self, table: "generalText")

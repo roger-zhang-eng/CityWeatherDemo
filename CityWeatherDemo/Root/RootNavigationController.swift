@@ -16,7 +16,7 @@ class RootNavigationController: UINavigationController {
         guard let rootVC = self.viewControllers.first as? SearchCityWeatherViewController else {
             return
         }
-        
+
         rootVC.viewModel = SearchCityWeatherViewModel(weatherService: WeatherDataService(),
                                                       countryCodeDecoder: CityWeatherHelper(),
                                                       locationService: LocationManager(),

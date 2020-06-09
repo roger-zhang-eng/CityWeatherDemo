@@ -16,7 +16,7 @@ class WeatherDataServiceTest: XCTestCase {
     let disposeBag = DisposeBag()
     let sydneyCityId = "2147714"
     let testAppId = "5c6090ae72520cc52ea0e6e951bd786d"
-    
+
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class
     }
@@ -27,9 +27,9 @@ class WeatherDataServiceTest: XCTestCase {
 
     func testWeatherService() {
         let exp = expectation(description: "Download weather list test")
-        
+
         let expectedCity = "Sydney"
-        
+
         let weatherService = WeatherDataService()
         weatherService.getCityWetherData(searchType: SearchType.cityId(sydneyCityId), appId: testAppId)
             .asObservable()

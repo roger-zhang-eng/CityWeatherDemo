@@ -17,7 +17,7 @@ class SearchCityWeatherViewModelTest: XCTestCase {
     var viewModel: SearchCityWeatherViewModel!
     let mockNetowrkMonitor = MockNetworkMonitor()
     let mockLocationManager = MockLocationManager()
-    
+
     override func setUp() {
         scheduler = TestScheduler(initialClock: 0)
         viewModel = SearchCityWeatherViewModel(weatherService: MockWeatherDataService(),
@@ -32,13 +32,13 @@ class SearchCityWeatherViewModelTest: XCTestCase {
 
     func testSearchCityName() {
         let expectedCity = "Sydney"
-        
+
         let response = scheduler.createObserver(String.self)
-        
+
         scheduler.createColdObservable([.next(10, "Sydney")])
             .bind(to: self.viewModel.input.searchContentTrigger)
             .disposed(by: disposeBag)
-        
+
         self.viewModel.output?.refreshTableView
             .map({
                  [unowned self] (_) in
@@ -49,19 +49,19 @@ class SearchCityWeatherViewModelTest: XCTestCase {
             .disposed(by: disposeBag)
 
         scheduler.start()
-        
+
         XCTAssertEqual(response.events, [.next(10, expectedCity)])
     }
-    
+
     func testSearchCityGPS() {
         let expectedCity = "Sydney"
-        
+
         let response = scheduler.createObserver(String.self)
-        
+
         scheduler.createColdObservable([.next(10, ())])
             .bind(to: self.viewModel.input.gpsLocationTrigger)
             .disposed(by: disposeBag)
-        
+
         self.viewModel.output?.refreshTableView
             .map({
                  [unowned self] (_) in
@@ -72,19 +72,19 @@ class SearchCityWeatherViewModelTest: XCTestCase {
             .disposed(by: disposeBag)
 
         scheduler.start()
-        
+
         XCTAssertEqual(response.events, [.next(10, expectedCity)])
     }
 
     func testSearchCityZipCode() {
         let expectedCity = "Sydney"
-        
+
         let response = scheduler.createObserver(String.self)
-        
+
         scheduler.createColdObservable([.next(10, "2001")])
             .bind(to: self.viewModel.input.searchContentTrigger)
             .disposed(by: disposeBag)
-        
+
         self.viewModel.output?.refreshTableView
             .map({
                  [unowned self] (_) in
@@ -95,45 +95,45 @@ class SearchCityWeatherViewModelTest: XCTestCase {
             .disposed(by: disposeBag)
 
         scheduler.start()
-        
+
         XCTAssertEqual(response.events, [.next(10, expectedCity)])
     }
-    
+
     func testSearchUnderNetworkdown() {
         let expectedError = ServiceError.network
-           
+
         let response = scheduler.createObserver(ServiceError.self)
         mockNetowrkMonitor.mockNetworkDown()
-        
+
        scheduler.createColdObservable([.next(10, "2001")])
            .bind(to: self.viewModel.input.searchContentTrigger)
            .disposed(by: disposeBag)
-           
+
            self.viewModel.output?.error
            .bind(to: response)
            .disposed(by: disposeBag)
 
            scheduler.start()
-           
+
            XCTAssertEqual(response.events, [.next(10, expectedError)])
        }
-    
+
     func testSearchUnderGPSNotAuth() {
      let expectedError = ServiceError.gpsError
-        
+
      let response = scheduler.createObserver(ServiceError.self)
         mockLocationManager.mockLocationNotAuthorised()
-     
+
     scheduler.createColdObservable([.next(10, ())])
         .bind(to: self.viewModel.input.gpsLocationTrigger)
         .disposed(by: disposeBag)
-        
+
         self.viewModel.output?.error
         .bind(to: response)
         .disposed(by: disposeBag)
 
         scheduler.start()
-        
+
         XCTAssertEqual(response.events, [.next(10, expectedError)])
     }
 }

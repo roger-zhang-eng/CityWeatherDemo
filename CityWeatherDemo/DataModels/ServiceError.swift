@@ -28,7 +28,7 @@ public enum ServiceError: Error {
     case overSize
     /// GPS Error
     case gpsError
-    
+
     func title() -> String {
         switch self {
         case .notFound:
@@ -37,7 +37,7 @@ public enum ServiceError: Error {
             return "Alert-Title".localized
         }
     }
-    
+
     func message() -> String {
         switch self {
         case .network:
